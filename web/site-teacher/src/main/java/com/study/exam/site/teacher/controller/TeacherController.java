@@ -2,9 +2,14 @@ package com.study.exam.site.teacher.controller;
 
 import com.study.exam.paper.domain.Paper;
 import com.study.exam.paper.domain.PaperTemplate;
+import com.study.exam.paper.domain.Problem;
+import com.study.exam.paper.service.PaperService;
+import com.study.exam.paper.service.PaperTemplateService;
 import com.study.exam.site.teacher.controller.vo.ProblemInput;
 import com.study.exam.user.domain.School;
 import com.study.exam.user.domain.User;
+import com.study.exam.user.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,25 +24,24 @@ import java.util.List;
 
 @Controller
 @RequestMapping(value="/teacher")
+@RequiredArgsConstructor
 public class TeacherController {
 
+    private final UserService userService;
+    private final PaperTemplateService paperTemplateService;
+    private final PaperService paperService;
 
     @GetMapping({"", "/"})
     public String index(@AuthenticationPrincipal User user, Model model){
-        model.addAttribute("studentCount", 1);
-        model.addAttribute("paperTemplateCount", 1);
+        model.addAttribute("studentCount", userService.findTeacherStudentCount(user.getUserId()));
+        model.addAttribute("paperTemplateCount", paperTemplateService.countByUserId(user.getUserId()));
         return "teacher/index";
     }
 
-    @GetMapping("/signup")
-    public String signUp(){
-
-        return "teacher/signup";
-    }
     @GetMapping("/student/list")
     public String studyList(@AuthenticationPrincipal User user, Model model){
         model.addAttribute("menu", "student");
-        model.addAttribute("studentList", List.of(user()));
+        model.addAttribute("studentList", userService.findTeacherStudentList(user.getUserId()));
         return "teacher/student/list.html";
     }
 
@@ -57,8 +61,12 @@ public class TeacherController {
     ){
         model.addAttribute("menu", "paper");
 
-        model.addAttribute("template", paperTemplate());
-        model.addAttribute("papers", paperList());
+        var papers = paperService.getPapers(paperTemplateId);
+        var userMap = userService.getUsers(papers.stream().map(p->p.getStudyUserId()).toList());
+        papers.forEach(paper -> paper.setUser(userMap.get(paper.getStudyUserId())));
+
+        model.addAttribute("template", paperTemplateService.findById(paperTemplateId).get());
+        model.addAttribute("papers", papers);
         return "teacher/student/results.html";
     }
 
@@ -70,7 +78,9 @@ public class TeacherController {
             Model model
     ){
         model.addAttribute("menu", "paper");
-        model.addAttribute("page", new PageImpl(List.of(paperTemplate())));
+        var templateList = paperTemplateService.findByTeacherId(user.getUserId(), pageNum, size);
+
+        model.addAttribute("page", templateList);
         return "teacher/paperTemplate/list.html";
     }
 
@@ -82,7 +92,13 @@ public class TeacherController {
 
     @PostMapping(value="/paperTemplate/create", consumes = {"application/x-www-form-urlencoded;charset=UTF-8", MediaType.APPLICATION_FORM_URLENCODED_VALUE})
     public String createAndEditTemplate(@RequestParam String paperName, @AuthenticationPrincipal User user, Model model){
-        model.addAttribute("template", paperTemplate());
+
+        var paperTemplate = PaperTemplate.builder()
+                .name(paperName)
+                .userId(user.getUserId())
+                .build();
+
+        model.addAttribute("template", paperTemplateService.save(paperTemplate));
         return "teacher/paperTemplate/edit.html";
     }
 
@@ -92,7 +108,10 @@ public class TeacherController {
             @AuthenticationPrincipal User user,
             Model model
     ){
-        model.addAttribute("template", paperTemplate());
+        var paperTemplate = paperTemplateService.findPaperTemplate(paperTemplateId)
+                .orElseThrow(() -> new IllegalArgumentException("시험지 템플릿이 존재하지 않습니다."));
+
+        model.addAttribute("template", paperTemplate);
         return "teacher/paperTemplate/edit.html";
     }
 
@@ -100,7 +119,18 @@ public class TeacherController {
     public String addProblemToPaperTemplate(
             ProblemInput problemInput,
             @AuthenticationPrincipal User user, Model model){
-        model.addAttribute("template", paperTemplate());
+
+        var p = Problem.builder()
+                .paperTemplateId(problemInput.getPaperTemplateId())
+                .content(problemInput.getContent())
+                .answer(problemInput.getAnswer())
+                .build();
+        paperTemplateService.addProblem(problemInput.getPaperTemplateId(), p);
+
+        var paperTemplate = paperTemplateService.findPaperTemplate(problemInput.getPaperTemplateId())
+                .orElseThrow(() -> new IllegalArgumentException("시험지 템플릿이 존재하지 않습니다."));
+
+        model.addAttribute("template", paperTemplate);
         return "teacher/paperTemplate/edit.html";
     }
 
@@ -114,6 +144,8 @@ public class TeacherController {
             @AuthenticationPrincipal User user, Model model
     ){
 
+        var studentList = userService.findTeacherStudentList(user.getUserId());
+        paperService.publishPaper(paperTemplateId, studentList.stream().map(u->u.getUserId()).toList());
         return "redirect:teacher/paperTemplate/list.html";
     }
 

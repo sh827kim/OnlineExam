@@ -27,9 +27,16 @@ public class SchoolMngController {
     public String list(
             @RequestParam(value="pageNum", defaultValue = "1") Integer pageNum,
             @RequestParam(value="size", defaultValue = "10") Integer size,
-            Model model
-    ){
+            Model model){
         model.addAttribute("menu", "school");
+
+        var schoolList = schoolService.getSchoolListAsPage(pageNum, size);
+        schoolList.getContent().stream().forEach(school -> {
+            school.setTeacherCount(userService.countTeacher(school.getSchoolId()));
+            school.setStudentCount(userService.countStudent(school.getSchoolId()));
+        });
+
+        model.addAttribute("page", schoolList);
 
         return "manager/school/list.html";
     }
@@ -37,10 +44,11 @@ public class SchoolMngController {
     @GetMapping("/edit")
     public String list(
             @RequestParam(value="schoolId", required = false) Long schoolId,
-            Model model
-    ){
+            Model model){
         model.addAttribute("menu", "school");
-        model.addAttribute("school", School.builder().build());
+        var school = schoolId !=null ? schoolService.findSchool(schoolId) : School.builder().build();
+
+        model.addAttribute("school",school);
         return "manager/school/edit.html";
     }
 

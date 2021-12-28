@@ -3,6 +3,8 @@ package com.study.exam.user.service;
 import com.study.exam.user.domain.School;
 import com.study.exam.user.repository.SchoolRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +27,14 @@ public class SchoolService {
         return schoolRepository.save(school);
     }
 
+    public Optional<School> findSchool(Long schoolId) {
+        return schoolRepository.findById(schoolId);
+    }
+
+    public Page<School> getSchoolListAsPage(int pageNumber, int size) {
+        return schoolRepository.findAllByOrderByCreatedDesc(PageRequest.of(pageNumber-1, size));
+    }
+
     public Optional<School> updateName(Long schoolId, String name) {
         return schoolRepository.findById(schoolId).map(school -> {
             school.setName(name);
@@ -39,5 +49,9 @@ public class SchoolService {
 
     public List<School> findAllByCity(String city) {
         return schoolRepository.findAllByCity(city);
+    }
+
+    public Long count() {
+        return schoolRepository.count();
     }
 }

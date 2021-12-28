@@ -1,7 +1,9 @@
 package com.study.exam.site.manager.controller;
 
+import com.study.exam.site.manager.controller.vo.TeacherData;
 import com.study.exam.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +24,12 @@ public class TeacherMngController {
             Model model
     ){
         model.addAttribute("menu", "teacher");
+        Page<TeacherData> teacherList = userService.listTeachers(pageNum, size)
+                .map(t -> new TeacherData(t.getSchool().getName(), t.getUserId(), t.getName(), t.getEmail(), 0L));
+        teacherList.getContent().stream()
+                .forEach(data -> data.setStudentCount(userService.findTeacherStudentCount(data.getUserId())));
+
+        model.addAttribute("page", teacherList);
 
         return "manager/teacher/list.html";
     }

@@ -133,12 +133,12 @@ public class PaperService {
     }
 
     @Transactional(readOnly = true)
-    public List<Paper> getPapersByUserIng(Long studyUserId) {
+    public List<Paper> getPapersByUserId(Long studyUserId) {
         return paperRepository.findAllByStudyUserIdAndStateInOrderByCreatedDesc(studyUserId, List.of(Paper.PaperState.READY, Paper.PaperState.START));
     }
 
     @Transactional(readOnly = true)
-    public long countPapersByUserIng(Long studyUserId) {
+    public long countPapersByUserId(Long studyUserId) {
         return paperRepository.countByStudyUserIdAndStateIn(studyUserId, List.of(Paper.PaperState.READY, Paper.PaperState.START));
     }
 

@@ -24,4 +24,10 @@ public class School {
     private LocalDateTime created;
 
     private LocalDateTime updated;
+
+    @Transient
+    private Long teacherCount;
+
+    @Transient
+    private Long studentCount;
 }
