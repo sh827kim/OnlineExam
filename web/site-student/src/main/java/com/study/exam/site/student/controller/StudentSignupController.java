@@ -39,8 +39,8 @@ public class StudentSignupController {
                 .grade(form.getGrade())
                 .enabled(true)
                 .build();
-        schoolService.findSchool(form.getSchoolId()).ifPresent(school -> study.setSchool(school));
-        userService.findUser(form.getTeacherId()).ifPresent(teacher->study.setTeacher(teacher));
+        schoolService.findSchool(form.getSchoolId()).ifPresent(study::setSchool);
+        userService.findUser(form.getTeacherId()).ifPresent(study::setTeacher);
 
         User saved = userService.save(study);
         userService.addAuthority(saved.getUserId(), Authority.ROLE_STUDENT);
