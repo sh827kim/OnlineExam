@@ -12,13 +12,13 @@ public class TeacherController {
     @GetMapping({"", "/"})
     public String index(){
 
-        return "/templates/teacher/index";
+        return "teacher/index";
     }
 
     @GetMapping("/signup")
     public String signUp(){
 
-        return "/templates/teacher/signup";
+        return "teacher/signup";
     }
 
 }

@@ -10,12 +10,12 @@ public class StudentController {
     @GetMapping({"", "/"})
     public String index(){
 
-        return "/student/index";
+        return "student/index";
     }
 
     @GetMapping("/signup")
     public String signUp(){
 
-        return "/student/signup";
+        return "student/signup";
     }
 }

@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html 	xmlns:th="http://www.thymeleaf.org"
          xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-         layout:decorator="/sign_layout">
+         layout:decorate="@{sign_layout}">
 <head>
     <title> 관리자 </title>
 </head>
 
 <!-- 페이지의 개별적인 css -->
 <th:block layout:fragment="css">
-    <link rel="stylesheet" href="/css/login.css" />
+    <link rel="stylesheet" href="@{css/login.css}" />
 </th:block>
 
 <div layout:fragment="content">

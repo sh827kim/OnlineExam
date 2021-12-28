@@ -26,3 +26,7 @@ spring:
     cache: false
     check-template-location: true
     suffix: .html
+
+#logging:
+#  level:
+#    org.springframework.web: true
