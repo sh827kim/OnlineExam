@@ -39,7 +39,7 @@ public class Paper {
 
     private PaperState state;
 
-    public static enum PaperState {
+    public enum PaperState {
         READY,
         START,
         END,

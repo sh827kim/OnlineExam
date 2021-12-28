@@ -28,7 +28,7 @@ public class StudentMngController {
                 .map(s -> new StudentData(s.getSchool().getName(), s.getUserId(), s.getName(), s.getEmail(), s.getGrade()));
         model.addAttribute("page", studentList);
 
-        return "manager/student/list.html";
+        return "manager/student/list";
     }
 
 

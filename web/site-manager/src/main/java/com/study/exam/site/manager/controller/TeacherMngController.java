@@ -26,12 +26,12 @@ public class TeacherMngController {
         model.addAttribute("menu", "teacher");
         Page<TeacherData> teacherList = userService.listTeachers(pageNum, size)
                 .map(t -> new TeacherData(t.getSchool().getName(), t.getUserId(), t.getName(), t.getEmail(), 0L));
-        teacherList.getContent().stream()
+        teacherList.getContent()
                 .forEach(data -> data.setStudentCount(userService.findTeacherStudentCount(data.getUserId())));
 
         model.addAttribute("page", teacherList);
 
-        return "manager/teacher/list.html";
+        return "manager/teacher/list";
     }
 
 

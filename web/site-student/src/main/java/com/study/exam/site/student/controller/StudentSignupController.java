@@ -27,7 +27,7 @@ public class StudentSignupController {
     public String signUp(Model model){
         model.addAttribute("site", "student");
         model.addAttribute("cityList", schoolService.cities());
-        return "/study/signup";
+        return "/student/signup";
     }
 
     @PostMapping(value = "/signUp/student", consumes = {"application/x-www-form-urlencoded;charset=UTF-8", MediaType.APPLICATION_FORM_URLENCODED_VALUE})
@@ -45,7 +45,7 @@ public class StudentSignupController {
         User saved = userService.save(study);
         userService.addAuthority(saved.getUserId(), Authority.ROLE_STUDENT);
         model.addAttribute("site", "student");
-        return "loginForm.html";
+        return "loginForm";
     }
 
 

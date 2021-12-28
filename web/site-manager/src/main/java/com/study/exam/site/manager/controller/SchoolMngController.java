@@ -31,14 +31,14 @@ public class SchoolMngController {
         model.addAttribute("menu", "school");
 
         var schoolList = schoolService.getSchoolListAsPage(pageNum, size);
-        schoolList.getContent().stream().forEach(school -> {
+        schoolList.getContent().forEach(school -> {
             school.setTeacherCount(userService.countTeacher(school.getSchoolId()));
             school.setStudentCount(userService.countStudent(school.getSchoolId()));
         });
 
         model.addAttribute("page", schoolList);
 
-        return "manager/school/list.html";
+        return "manager/school/list";
     }
 
     @GetMapping("/edit")
@@ -49,13 +49,13 @@ public class SchoolMngController {
         var school = schoolId !=null ? schoolService.findSchool(schoolId) : School.builder().build();
 
         model.addAttribute("school",school);
-        return "manager/school/edit.html";
+        return "manager/school/edit";
     }
 
     @PostMapping(value = "/save", consumes = {"application/x-www-form-urlencoded;charset=UTF-8", MediaType.APPLICATION_FORM_URLENCODED_VALUE})
     public String save(School school){
         schoolService.save(school);
-        return "redirect:/manager/school/list.html";
+        return "redirect:/manager/school/list";
     }
 
 }

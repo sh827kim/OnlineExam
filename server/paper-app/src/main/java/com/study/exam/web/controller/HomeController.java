@@ -85,7 +85,7 @@ public class HomeController {
 
     private String estimateSite(String referer) {
         if(referer==null) {
-            return "student.html";
+            return "student";
         }
 
         try {
@@ -97,7 +97,7 @@ public class HomeController {
                 if(path.startsWith("/manager")) return "manager";
             }
             var query = url.getQuery();
-            if(query != null){
+            if(query != null && path!=null){
                 if(path.startsWith("/site=teacher")) return "teacher";
                 if(path.startsWith("/site=student")) return "student";
                 if(path.startsWith("/site=manager")) return "manager";
@@ -105,6 +105,6 @@ public class HomeController {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        return "student.html";
+        return "student";
     }
 }

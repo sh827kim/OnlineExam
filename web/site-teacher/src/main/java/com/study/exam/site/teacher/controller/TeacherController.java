@@ -6,11 +6,9 @@ import com.study.exam.paper.domain.Problem;
 import com.study.exam.paper.service.PaperService;
 import com.study.exam.paper.service.PaperTemplateService;
 import com.study.exam.site.teacher.controller.vo.ProblemInput;
-import com.study.exam.user.domain.School;
 import com.study.exam.user.domain.User;
 import com.study.exam.user.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -20,7 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
 
 @Controller
 @RequestMapping(value="/teacher")
@@ -42,7 +39,7 @@ public class TeacherController {
     public String studyList(@AuthenticationPrincipal User user, Model model){
         model.addAttribute("menu", "student");
         model.addAttribute("studentList", userService.findTeacherStudentList(user.getUserId()));
-        return "teacher/student/list.html";
+        return "teacher/student/list";
     }
 
     /**
@@ -62,12 +59,12 @@ public class TeacherController {
         model.addAttribute("menu", "paper");
 
         var papers = paperService.getPapers(paperTemplateId);
-        var userMap = userService.getUsers(papers.stream().map(p->p.getStudyUserId()).toList());
+        var userMap = userService.getUsers(papers.stream().map(Paper::getStudyUserId).toList());
         papers.forEach(paper -> paper.setUser(userMap.get(paper.getStudyUserId())));
 
-        model.addAttribute("template", paperTemplateService.findById(paperTemplateId).get());
+        model.addAttribute("template", paperTemplateService.findById(paperTemplateId).orElseThrow(IllegalArgumentException::new));
         model.addAttribute("papers", papers);
-        return "teacher/student/results.html";
+        return "teacher/student/results";
     }
 
     @GetMapping("/paperTemplate/list")
@@ -81,13 +78,13 @@ public class TeacherController {
         var templateList = paperTemplateService.findByTeacherId(user.getUserId(), pageNum, size);
 
         model.addAttribute("page", templateList);
-        return "teacher/paperTemplate/list.html";
+        return "teacher/paperTemplate/list";
     }
 
     @GetMapping("/paperTemplate/create")
     public String editPaperTemplateName(@AuthenticationPrincipal User user, Model model){
 
-        return "teacher/paperTemplate/create.html";
+        return "teacher/paperTemplate/create";
     }
 
     @PostMapping(value="/paperTemplate/create", consumes = {"application/x-www-form-urlencoded;charset=UTF-8", MediaType.APPLICATION_FORM_URLENCODED_VALUE})
@@ -99,7 +96,7 @@ public class TeacherController {
                 .build();
 
         model.addAttribute("template", paperTemplateService.save(paperTemplate));
-        return "teacher/paperTemplate/edit.html";
+        return "teacher/paperTemplate/edit";
     }
 
     @GetMapping("/paperTemplate/edit")
@@ -112,7 +109,7 @@ public class TeacherController {
                 .orElseThrow(() -> new IllegalArgumentException("시험지 템플릿이 존재하지 않습니다."));
 
         model.addAttribute("template", paperTemplate);
-        return "teacher/paperTemplate/edit.html";
+        return "teacher/paperTemplate/edit";
     }
 
     @PostMapping(value="/paperTemplate/problem/add", consumes = {"application/x-www-form-urlencoded;charset=UTF-8", MediaType.APPLICATION_FORM_URLENCODED_VALUE})
@@ -131,7 +128,7 @@ public class TeacherController {
                 .orElseThrow(() -> new IllegalArgumentException("시험지 템플릿이 존재하지 않습니다."));
 
         model.addAttribute("template", paperTemplate);
-        return "teacher/paperTemplate/edit.html";
+        return "teacher/paperTemplate/edit";
     }
 
     /**
@@ -145,40 +142,7 @@ public class TeacherController {
     ){
 
         var studentList = userService.findTeacherStudentList(user.getUserId());
-        paperService.publishPaper(paperTemplateId, studentList.stream().map(u->u.getUserId()).toList());
-        return "redirect:teacher/paperTemplate/list.html";
-    }
-
-    private User user(){
-        return User.builder()
-                .userId(1L)
-                .name("홍길동")
-                .email("hong@test.com")
-                .grade("3")
-                .enabled(true)
-                .school(School.builder().schoolId(1L).name("테스트 학교").city("서울").build())
-                .build();
-    }
-
-    private PaperTemplate paperTemplate(){
-        return PaperTemplate.builder()
-                .paperTemplateId(1L)
-                .name("테스트 시험지")
-                .creator(user())
-                .userId(1L)
-                .publishedCount(1)
-                .build();
-    }
-
-    private List<Paper> paperList(){
-        return List.of(Paper.builder()
-                .name("테스트 시험지")
-                .paperTemplateId(1L)
-                .state(Paper.PaperState.START)
-                .total(2)
-                .paperId(1L)
-                .studyUserId(1L)
-                .user(user())
-                .build());
+        paperService.publishPaper(paperTemplateId, studentList.stream().map(User::getUserId).toList());
+        return "redirect:teacher/paperTemplate/list";
     }
 }

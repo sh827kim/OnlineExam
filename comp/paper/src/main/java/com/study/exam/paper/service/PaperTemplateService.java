@@ -39,9 +39,7 @@ public class PaperTemplateService {
             }
             problem.setCreated(LocalDateTime.now());
             paperTemplate.getProblemList().add(problem);
-            IntStream.rangeClosed(1, paperTemplate.getProblemList().size()).forEach(i->{
-                paperTemplate.getProblemList().get(i-1).setIndexNum(i);
-            });
+            IntStream.rangeClosed(1, paperTemplate.getProblemList().size()).forEach(i-> paperTemplate.getProblemList().get(i-1).setIndexNum(i));
             paperTemplate.setTotal(paperTemplate.getProblemList().size());
             Problem saved = problemService.save(problem);
             save(paperTemplate);
@@ -61,13 +59,11 @@ public class PaperTemplateService {
             Optional<Problem> problem = paperTemplate.getProblemList().stream().filter(p -> p.getProblemId().equals(problemId)).findFirst();
             if(problem.isPresent()){
                 paperTemplate.setProblemList(
-                        paperTemplate.getProblemList().stream().filter(p -> !p.getProblemId().equals(problemId))
-                                .collect(Collectors.toList())
+                        paperTemplate.getProblemList().stream().filter(p -> !p.getProblemId().equals(problemId)).toList()
                 );
                 problemService.delete(problem.get());
-                IntStream.rangeClosed(1, paperTemplate.getProblemList().size()).forEach(i->{
-                    paperTemplate.getProblemList().get(i-1).setIndexNum(i);
-                });
+                IntStream.rangeClosed(1, paperTemplate.getProblemList().size()).forEach(i->
+                        paperTemplate.getProblemList().get(i-1).setIndexNum(i));
             }
             paperTemplate.setTotal(paperTemplate.getProblemList().size());
             return save(paperTemplate);
@@ -92,7 +88,7 @@ public class PaperTemplateService {
     @Transactional(readOnly = true)
     public Map<Integer, String> getPaperAnswerSheet(Long paperTemplateId) {
         Optional<PaperTemplate> template = findById(paperTemplateId);
-        if(!template.isPresent()) return new HashMap<>();
+        if(template.isEmpty()) return new HashMap<>();
         return template.get().getProblemList().stream().collect(Collectors.toMap(Problem::getIndexNum, Problem::getAnswer));
     }
 

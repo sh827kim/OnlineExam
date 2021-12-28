@@ -1,11 +1,9 @@
 package com.study.exam.site.student.controller;
 
 import com.study.exam.paper.domain.Paper;
-import com.study.exam.paper.domain.PaperTemplate;
 import com.study.exam.paper.service.PaperService;
 import com.study.exam.paper.service.PaperTemplateService;
 import com.study.exam.site.student.controller.vo.Answer;
-import com.study.exam.user.domain.School;
 import com.study.exam.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -16,8 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.List;
 
 @Controller
 @RequestMapping(value="/student")
@@ -41,7 +37,7 @@ public class StudentController {
     public String paperList(@AuthenticationPrincipal User user, Model model){
         model.addAttribute("menu", "paper");
         model.addAttribute("papers", paperService.getPapersByUserId(user.getUserId()));
-        return "student/paper/papers.html";
+        return "student/paper/papers";
     }
 
     @GetMapping("/results")
@@ -54,7 +50,7 @@ public class StudentController {
         model.addAttribute("page",
                 paperService.getPapersByUserResult(user.getUserId(), pageNum, size)
         );
-        return "student/paper/results.html";
+        return "student/paper/results";
     }
 
 
@@ -62,7 +58,7 @@ public class StudentController {
     @GetMapping(value="/paper/apply")
     public String applyPaper(@RequestParam Long paperId, @AuthenticationPrincipal User user, Model model){
 
-        var paper = paperService.findPaper(paperId).orElseThrow(()-> new IllegalArgumentException());
+        var paper = paperService.findPaper(paperId).orElseThrow(IllegalArgumentException::new);
         if(paper.getState() == Paper.PaperState.END){
             return "redirect:/student/paper/result?paperId="+paperId;
         }
@@ -84,7 +80,7 @@ public class StudentController {
 
         model.addAttribute("alldone", notAnswered.isEmpty());
 
-        return "student/paper/apply.html";
+        return "student/paper/apply";
     }
 
     /**
@@ -113,39 +109,6 @@ public class StudentController {
         var paper = paperService.findPaper(paperId).orElseThrow(()-> new IllegalArgumentException("시험지가 존재하지 않습니다."));
         model.addAttribute("paper", paper);
 
-        return "student/paper/result.html";
-    }
-
-    private User user(){
-        return User.builder()
-                .userId(1L)
-                .name("홍길동")
-                .email("hong@test.com")
-                .grade("3")
-                .enabled(true)
-                .school(School.builder().schoolId(1L).name("테스트 학교").city("서울").build())
-                .build();
-    }
-
-    private PaperTemplate paperTemplate(){
-        return PaperTemplate.builder()
-                .paperTemplateId(1L)
-                .name("테스트 시험지")
-                .creator(user())
-                .userId(1L)
-                .publishedCount(1)
-                .build();
-    }
-
-    private List<Paper> paperList(){
-        return List.of(Paper.builder()
-                .name("테스트 시험지")
-                .paperTemplateId(1L)
-                .state(Paper.PaperState.START)
-                .total(2)
-                .paperId(1L)
-                .studyUserId(1L)
-                .user(user())
-                .build());
+        return "student/paper/result";
     }
 }

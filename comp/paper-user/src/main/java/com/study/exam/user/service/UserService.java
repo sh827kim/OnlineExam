@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Service
 @Transactional
@@ -44,7 +43,7 @@ public class UserService {
     }
 
     public Map<Long, User> getUsers(List<Long> userIds){
-        return StreamSupport.stream(userRepository.findAllById(userIds).spliterator(), false)
+        return userRepository.findAllById(userIds).stream()
                 .collect(Collectors.toMap(User::getUserId, Function.identity()));
     }
 
@@ -57,8 +56,7 @@ public class UserService {
                 user.setAuthorities(authorities);
                 save(user);
             }else if(!user.getAuthorities().contains(newRole)){
-                HashSet<Authority> authorities = new HashSet<>();
-                authorities.addAll(user.getAuthorities());
+                HashSet<Authority> authorities = new HashSet<>(user.getAuthorities());
                 authorities.add(newRole);
                 user.setAuthorities(authorities);
                 save(user);
@@ -115,12 +113,12 @@ public class UserService {
     public void updateUserSchoolTeacher(Long userId, Long schoolId, Long teacherId) {
         userRepository.findById(userId).ifPresent(user->{
             if(!user.getSchool().getSchoolId().equals(schoolId)) {
-                schoolRepository.findById(schoolId).ifPresent(school -> user.setSchool(school));
+                schoolRepository.findById(schoolId).ifPresent(user::setSchool);
             }
             if(!user.getTeacher().getUserId().equals(teacherId)){
-                findUser(teacherId).ifPresent(teacher->user.setTeacher(teacher));
+                findUser(teacherId).ifPresent(user::setTeacher);
             }
-            if(user.getSchool().getSchoolId() != user.getTeacher().getSchool().getSchoolId()){
+            if(!user.getSchool().getSchoolId().equals(user.getTeacher().getSchool().getSchoolId())){
                 throw new IllegalArgumentException("해당 학교의 선생님이 아닙니다.");
             }
             save(user);

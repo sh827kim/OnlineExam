@@ -16,8 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 
 @Service
@@ -40,7 +38,7 @@ public class PaperService {
     @Transactional
     public List<Paper> publishPaper(long paperTemplateId, List<Long> studentIdList){
         List<Paper> papers = paperTemplateService.findById(paperTemplateId).map(paperTemplate ->
-                StreamSupport.stream(userRepository.findAllById(studentIdList).spliterator(), false)
+                userRepository.findAllById(studentIdList).stream()
                         .map(study -> {
                             Paper paper = Paper.builder()
                                     .paperTemplateId(paperTemplate.getPaperTemplateId())
@@ -50,17 +48,14 @@ public class PaperService {
                                     .total(paperTemplate.getTotal())
                                     .build();
                             return save(paper);
-                        }).collect(Collectors.toList())
+                        }).toList()
         ).orElseThrow(()->new IllegalArgumentException(paperTemplateId+" 시험지 템플릿이 존재하지 않습니다."));
         paperTemplateService.updatePublishedCount(paperTemplateId, papers.size());
         return papers;
     }
 
     public void removePaper(long paperTemplateId, List<Long> studyIdList){
-        paperRepository.findAllByPaperTemplateIdAndStudyUserIdIn(paperTemplateId, studyIdList)
-                .forEach(paper -> {
-                    paperRepository.delete(paper);
-                });
+        paperRepository.deleteAll(paperRepository.findAllByPaperTemplateIdAndStudyUserIdIn(paperTemplateId, studyIdList));
     }
 
     @Transactional
@@ -81,7 +76,6 @@ public class PaperService {
                         .answer(answer)
                         .answered(LocalDateTime.now())
                         .build();
-//                paperAnswerRepository.save(pAnswer);
                 pAnswer.setPaper(paper);
                 if(paper.getPaperAnswerList() == null) paper.setPaperAnswerList(new ArrayList<>());
                 paper.getPaperAnswerList().add(pAnswer);
