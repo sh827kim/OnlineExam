@@ -6,7 +6,7 @@
 <header th:fragment="menuFragment">
     <nav class="navbar navbar-expand-sm navbar-dark bg-dark site-teacher">
         <div class="container">
-            <a class="navbar-brand" href="/templates/teacheres/teacher"> 선생님 사이트 </a>
+            <a class="navbar-brand" href="/teacher"> 선생님 사이트 </a>
 
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample03" aria-controls="navbarsExample03" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -14,11 +14,11 @@
 
             <div class="collapse navbar-collapse" id="navbarsExample03">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item" th:classappend="${menu=='study' ? 'active' : ''}">
-                        <a class="nav-link" href="/templates/teacher/study/list"> 학생 <span class="sr-only">(current)</span></a>
+                    <li class="nav-item" th:classappend="${menu=='student' ? 'active' : ''}">
+                        <a class="nav-link" href="/teacher/student/list"> 학생 <span class="sr-only">(current)</span></a>
                     </li>
                     <li class="nav-item" th:classappend="${menu=='paper' ? 'active' : ''}">
-                        <a class="nav-link" href="/templates/teacher/paperTemplate/list"> 시험지 <span class="sr-only">(current)</span></a>
+                        <a class="nav-link" href="/teacher/paperTemplate/list"> 시험지 <span class="sr-only">(current)</span></a>
                     </li>
                 </ul>
                 <ul class="navbar-nav right-menus">
