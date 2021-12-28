@@ -80,9 +80,7 @@ public class StudentController {
         model.addAttribute("paperId", paperId);
         model.addAttribute("paperName", paper.getName());
 
-        if(notAnswered.isPresent()) {
-            model.addAttribute("problem",notAnswered.get());
-        }
+        notAnswered.ifPresent(problem -> model.addAttribute("problem", problem));
 
         model.addAttribute("alldone", notAnswered.isEmpty());
 
