@@ -31,7 +31,7 @@ public class StudentSignupController {
     }
 
     @PostMapping(value = "/signUp/student", consumes = {"application/x-www-form-urlencoded;charset=UTF-8", MediaType.APPLICATION_FORM_URLENCODED_VALUE})
-    public String singup(StudySignUpForm form, Model model){
+    public String singUp(StudySignUpForm form, Model model){
         final User study = User.builder()
                 .name(form.getName())
                 .email(form.getEmail())
