@@ -6,6 +6,7 @@ import com.study.exam.paper.repository.PaperTemplateRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -75,6 +76,7 @@ public class PaperTemplateService {
         problemService.updateProblem(problemId, content, answer);
     }
 
+    @PostAuthorize("returnObject.isEmpty() || returnObject.get().userId == principal.userId || principal.authorities.contains(Authority.ADMIN_AUTHORITY)")
     @Transactional(readOnly = true)
     public Optional<PaperTemplate> findPaperTemplate(Long paperTemplateId) {
         return paperTemplateRepository.findById(paperTemplateId).map(pt->{

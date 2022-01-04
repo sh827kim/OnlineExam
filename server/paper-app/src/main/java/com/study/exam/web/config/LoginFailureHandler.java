@@ -18,7 +18,8 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-
+        handle(request, response);
+        clearAuthenticationAttributes(request);
     }
 
     protected void clearAuthenticationAttributes(HttpServletRequest request) {

@@ -92,14 +92,14 @@ public class StudentController {
     @PostMapping(value="/paper/answer", consumes = {"application/x-www-form-urlencoded;charset=UTF-8", MediaType.APPLICATION_FORM_URLENCODED_VALUE})
     public String answer(Answer answer, @AuthenticationPrincipal User user, Model model){
         paperService.answer(answer.getPaperId(), answer.getProblemId(), answer.getIndexNum(), answer.getAnswer());
-        return "redirect:student/paper/apply.html?paperId="+answer.getPaperId();
+        return "redirect:/student/paper/apply?paperId="+answer.getPaperId();
     }
 
     // 시험 완료
     @GetMapping("/paper/done")
     public String donePaper(Long paperId){
         paperService.paperDone(paperId);
-        return "redirect:student/paper/result.html?paperId="+paperId;
+        return "redirect:/student/paper/result?paperId="+paperId;
     }
 
     // 결과 시험지 리스트

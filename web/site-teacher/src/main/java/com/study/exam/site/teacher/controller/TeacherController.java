@@ -10,6 +10,7 @@ import com.study.exam.user.domain.User;
 import com.study.exam.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -58,13 +59,15 @@ public class TeacherController {
     ){
         model.addAttribute("menu", "paper");
 
-        var papers = paperService.getPapers(paperTemplateId);
-        var userMap = userService.getUsers(papers.stream().map(Paper::getStudyUserId).toList());
-        papers.forEach(paper -> paper.setUser(userMap.get(paper.getStudyUserId())));
+        return paperTemplateService.findPaperTemplate(paperTemplateId).map(paperTemplate -> {
+            var papers = paperService.getPapers(paperTemplateId);
+            var userMap = userService.getUsers(papers.stream().map(Paper::getStudyUserId).toList());
+            papers.forEach(paper -> paper.setUser(userMap.get(paper.getStudyUserId())));
 
-        model.addAttribute("template", paperTemplateService.findById(paperTemplateId).orElseThrow(IllegalArgumentException::new));
-        model.addAttribute("papers", papers);
-        return "teacher/student/results";
+            model.addAttribute("template", paperTemplateService.findById(paperTemplateId).orElseThrow(IllegalArgumentException::new));
+            model.addAttribute("papers", papers);
+            return "teacher/student/results";
+        }).orElseThrow(() -> new AccessDeniedException("시험지가 존재하지 않습니다."));
     }
 
     @GetMapping("/paperTemplate/list")
@@ -143,6 +146,6 @@ public class TeacherController {
 
         var studentList = userService.findTeacherStudentList(user.getUserId());
         paperService.publishPaper(paperTemplateId, studentList.stream().map(User::getUserId).toList());
-        return "redirect:teacher/paperTemplate/list";
+        return "redirect:/teacher/paperTemplate/list";
     }
 }

@@ -1,5 +1,6 @@
 package com.study.exam.web.config;
 
+import com.study.exam.user.domain.Authority;
 import com.study.exam.user.service.UserSecurityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -65,10 +66,11 @@ public class OnlinePaperSecurityConfig extends WebSecurityConfigurerAdapter {
                                 .antMatchers("/").permitAll()
                                 .antMatchers("/login").permitAll()
                                 .antMatchers("/error").permitAll()
+                                .antMatchers("/signup").permitAll()
                                 .antMatchers("/signup/*").permitAll()
-                                .antMatchers("/student/**").hasAuthority("ROLE_STUDENT")
-                                .antMatchers("/teacher/**").hasAuthority("ROLE_TEACHER")
-                                .antMatchers("/manager/**").hasAuthority("ROLE_ADMIN")
+                                .antMatchers("/student/**").hasAnyAuthority(Authority.ROLE_ADMIN, Authority.ROLE_STUDENT)
+                                .antMatchers("/teacher/**").hasAnyAuthority(Authority.ROLE_ADMIN, Authority.ROLE_TEACHER)
+                                .antMatchers("/manager/**").hasAuthority(Authority.ROLE_ADMIN)
                 )
         ;
     }

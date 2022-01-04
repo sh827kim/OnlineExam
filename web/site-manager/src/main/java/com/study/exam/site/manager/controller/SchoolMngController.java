@@ -5,6 +5,7 @@ import com.study.exam.user.domain.School;
 import com.study.exam.user.service.SchoolService;
 import com.study.exam.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping("/manager/school")
 @RequiredArgsConstructor
+@Slf4j
 public class SchoolMngController {
 
     private final SchoolService schoolService;
@@ -45,8 +47,9 @@ public class SchoolMngController {
     public String list(
             @RequestParam(value="schoolId", required = false) Long schoolId,
             Model model){
+        log.info("edit called : {}", schoolId);
         model.addAttribute("menu", "school");
-        var school = schoolId !=null ? schoolService.findSchool(schoolId) : School.builder().build();
+        var school = schoolId !=null ? schoolService.findSchool(schoolId).orElse(School.builder().build()) : School.builder().build();
 
         model.addAttribute("school",school);
         return "manager/school/edit";

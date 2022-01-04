@@ -24,13 +24,16 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
-        handle(request, response, requestCache.getRequest(request, response), authentication);
+
+        log.info("authenticated1");
+        handle(request, response, requestCache.getRequest(request, response));
         clearAuthenticationAttributes(request);
     }
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-
+        handle(request, response, requestCache.getRequest(request, response));
+        clearAuthenticationAttributes(request);
     }
 
     protected void clearAuthenticationAttributes(HttpServletRequest request) {
@@ -43,20 +46,18 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     protected void handle(
             HttpServletRequest request,
             HttpServletResponse response,
-            SavedRequest savedRequest,
-            Authentication authentication
+            SavedRequest savedRequest
     ) throws IOException {
-        var targetUrl = determineTargetUrl(request,savedRequest, authentication);
+        var targetUrl = determineTargetUrl(request,savedRequest);
         if(response.isCommitted()) {
-            log.debug("Response has already been committed. Unable to redirect to {}", targetUrl);
+            log.info("Response has already been committed. Unable to redirect to {}", targetUrl);
             return;
         }
         redirectStrategy.sendRedirect(request, response, targetUrl);
     }
 
     protected String determineTargetUrl(final HttpServletRequest request,
-                                        SavedRequest savedRequest,
-                                        final Authentication authentication) {
+                                        SavedRequest savedRequest) {
         if(savedRequest!=null) {
             var redirectUrl = savedRequest.getRedirectUrl();
             if(redirectUrl!=null && !redirectUrl.startsWith("/login")) {
@@ -64,6 +65,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
             }
         }
 
+        log.info("============== site : {} =================", request.getParameter("site"));
         return switch(request.getParameter("site")) {
             case "manager" -> "/manager";
             case "student" -> "/student";

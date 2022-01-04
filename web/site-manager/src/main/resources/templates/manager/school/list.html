@@ -32,8 +32,8 @@
                 <td th:text="*{city}">서울 </td>
                 <td th:text="*{name}">선원초 </td>
                 <td th:text="*{teacherCount}"> 4</td>
-                <td th:text="*{studyCount}"> 50 </td>
-                <td> <a class="btn btn-sm btn-secondary" th:href="@{/manager/school/edit(schoolId=${school.schoolId})}">수정 </a></td>
+                <td th:text="*{studentCount}"> 50 </td>
+                <td> <a class="btn btn-sm btn-secondary" th:href="@{/manager/school/edit(schoolId=${school.getSchoolId()})}">수정 </a></td>
             </tr>
             </tbody>
         </table>

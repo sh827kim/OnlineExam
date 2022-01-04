@@ -5,7 +5,6 @@ import com.study.exam.user.domain.User;
 import com.study.exam.user.repository.SchoolRepository;
 import com.study.exam.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -26,7 +25,7 @@ public class UserService {
     private final SchoolRepository schoolRepository;
     private final UserRepository userRepository;
 
-    public User save(User user) throws DataIntegrityViolationException {
+    public User save(User user) {
         if(user.getUserId() == null){
             user.setCreated(LocalDateTime.now());
         }
