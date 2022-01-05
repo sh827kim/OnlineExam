@@ -61,6 +61,9 @@ public class OnlinePaperSecurityConfig extends WebSecurityConfigurerAdapter {
                         config.rememberMeServices(rememberMeServices())
                 )
                 .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(exception->
+                    exception.accessDeniedPage("/access-denied")
+                )
                 .authorizeRequests(config ->
                         config
                                 .antMatchers("/").permitAll()

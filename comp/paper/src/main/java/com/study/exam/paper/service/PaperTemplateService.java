@@ -76,7 +76,7 @@ public class PaperTemplateService {
         problemService.updateProblem(problemId, content, answer);
     }
 
-    @PostAuthorize("returnObject.isEmpty() || returnObject.get().userId == principal.userId || principal.authorities.contains(Authority.ADMIN_AUTHORITY)")
+    @PostAuthorize("returnObject.isEmpty() || returnObject.get().userId == principal.userId || hasAuthority('ROLE_ADMIN')")
     @Transactional(readOnly = true)
     public Optional<PaperTemplate> findPaperTemplate(Long paperTemplateId) {
         return paperTemplateRepository.findById(paperTemplateId).map(pt->{

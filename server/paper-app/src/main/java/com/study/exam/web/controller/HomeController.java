@@ -88,6 +88,11 @@ public class HomeController {
         return "redirect:/"+"signup/" +site;
     }
 
+    @GetMapping("/access-denied")
+    public String accessDenied(){
+        return "/accessDenied";
+    }
+
     private String estimateSite(String referer) {
         if(referer!=null) {
             try {
