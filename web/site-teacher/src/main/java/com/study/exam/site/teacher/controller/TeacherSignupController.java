@@ -46,6 +46,4 @@ public class TeacherSignupController {
         model.addAttribute("site", "teacher");
         return "loginForm";
     }
-
-
 }

@@ -12,10 +12,7 @@ import lombok.NoArgsConstructor;
 public class ProblemInput {
 
     private Long paperTemplateId;
-
     private Long problemId;
-
     private String content;
     private String answer;
-
 }

@@ -32,15 +32,9 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        var userLogin = UserLogin.builder()
-                .username(request.getParameter("username"))
-                .password(request.getParameter("password"))
-                .site(request.getParameter("site"))
-                .rememberme(request.getParameter("remember-me")!=null)
-                .build();
         var authToken = new UsernamePasswordAuthenticationToken(
-                userLogin.getUsername(),
-                userLogin.getPassword(),
+                request.getParameter("username"),
+                request.getParameter("password"),
                 null);
 
         return authenticationManager.authenticate(authToken);

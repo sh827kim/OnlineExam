@@ -33,7 +33,4 @@ public class TeacherMngController {
 
         return "manager/teacher/list";
     }
-
-
-
 }

@@ -24,8 +24,6 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
-
-        log.info("authenticated1");
         handle(request, response, requestCache.getRequest(request, response));
         clearAuthenticationAttributes(request);
     }
@@ -56,6 +54,12 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         redirectStrategy.sendRedirect(request, response, targetUrl);
     }
 
+    /**
+     * 어디로 redirect 시킬 지에 대해서 TargetUrl을 정하는 메서드
+     * @param request - HttpServletRequest. 쿼리파라미터를 확인하기 위해 필요.
+     * @param savedRequest - SavedRequest. ServletRequest 데이터를 캐싱해서 읽었을 때 문제가 없게 하기 위해 사용.
+     * @return site에 따른 redirect URL
+     */
     protected String determineTargetUrl(final HttpServletRequest request,
                                         SavedRequest savedRequest) {
         if(savedRequest!=null) {
@@ -65,13 +69,11 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
             }
         }
 
-        log.info("============== site : {} =================", request.getParameter("site"));
         return switch(request.getParameter("site")) {
             case "manager" -> "/manager";
             case "student" -> "/student";
             case "teacher" -> "/teacher";
             default -> "/";
         };
-
     }
 }
